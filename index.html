@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Step-by-step guide to set up and access IBM Bob IDE">
+    <title>Bob IDE Setup Guide</title>
+    
+    <!-- IBM Carbon Design System CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/carbon-components@latest/css/carbon-components.min.css">
+    
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --header-height: 48px;
+            --cds-productive-heading-06: 2.25rem;
+            --cds-productive-heading-05: 2rem;
+            --cds-productive-heading-04: 1.75rem;
+            --cds-productive-heading-03: 1.5rem;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #161616;
+        }
+
+        /* Layout Container */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: #262626;
+            color: #f4f4f4;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid #393939;
+            background-color: #161616;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 400;
+            margin: 0;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            color: #c6c6c6;
+            margin-top: 0.25rem;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8d8d8d;
+            padding: 0.5rem 1.5rem;
+            margin: 0;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #f4f4f4;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background-color 0.2s, border-left 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background-color: #353535;
+            color: #ffffff;
+        }
+
+        .nav-link.active {
+            background-color: #393939;
+            border-left-color: #0f62fe;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .nav-step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #393939;
+            color: #f4f4f4;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .nav-link.active .nav-step-number {
+            background-color: #0f62fe;
+            color: #ffffff;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background-color: #161616;
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-menu-toggle:hover {
+            background-color: #262626;
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: #ffffff;
+            transition: transform 0.3s;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            padding: 3rem 3rem 2rem;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: var(--cds-productive-heading-05);
+            font-weight: 400;
+            margin: 0 0 0.5rem 0;
+            color: #161616;
+        }
+
+        .page-description {
+            font-size: 1rem;
+            color: #525252;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        /* Step Container */
+        .step {
+            background-color: #ffffff;
+            margin-bottom: 3rem;
+            padding: 2.5rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            scroll-margin-top: 2rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .step-number {
+            background-color: #0f62fe;
+            color: #ffffff;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: var(--cds-productive-heading-04);
+            font-weight: 400;
+            margin: 0;
+            color: #161616;
+        }
+
+        .step-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .step-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #525252;
+            margin-bottom: 1rem;
+        }
+
+        /* Important Note */
+        .important-note {
+            background-color: #fff1f1;
+            border-left: 4px solid #da1e28;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .important-note-title {
+            font-weight: 600;
+            color: #da1e28;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .important-note-content {
+            color: #525252;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Image Container - REDUCED SIZE */
+        .step-image {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .step-image img {
+            max-width: 650px;
+            width: 100%;
+            height: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-caption {
+            font-size: 0.875rem;
+            color: #525252;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Multiple Images in One Step */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .image-grid .step-image img {
+            max-width: 100%;
+        }
+
+        /* Link Styles */
+        .external-link {
+            color: #0f62fe;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .external-link:hover {
+            color: #0043ce;
+            text-decoration: underline;
+        }
+
+        /* Closing Statement */
+        .closing-statement {
+            background: linear-gradient(135deg, #0f62fe 0%, #0043ce 100%);
+            color: #ffffff;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 4px;
+            margin-top: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .closing-statement p {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        /* Footer */
+        .page-footer {
+            background-color: #161616;
+            color: #ffffff;
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .page-footer p {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .page-footer a {
+            color: #78a9ff;
+            text-decoration: none;
+        }
+
+        .page-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Accessibility */
+        .skip-to-content {
+            position: absolute;
+            left: -9999px;
+            z-index: 999;
+            padding: 1rem;
+            background-color: #0f62fe;
+            color: white;
+            text-decoration: none;
+        }
+
+        .skip-to-content:focus {
+            left: 50%;
+            transform: translateX(-50%);
+            top: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                padding: 2rem;
+            }
+
+            .step {
+                padding: 2rem;
+            }
+
+            .step-image img {
+                max-width: 600px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 280px;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-wrapper {
+                padding: 5rem 1.5rem 1.5rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .step {
+                padding: 1.5rem;
+            }
+
+            .step-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .step-number {
+                margin-bottom: 1rem;
+            }
+
+            .step-title {
+                font-size: 1.5rem;
+            }
+
+            .step-image img {
+                max-width: 100%;
+            }
+
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .closing-statement p {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to Content Link for Accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Bob IDE Setup Guide</h1>
+                <p class="sidebar-subtitle">Step-by-step installation</p>
+            </div>
+            <nav class="sidebar-nav" aria-label="Setup steps navigation">
+                <h2 class="nav-section-title">Setup Steps</h2>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#step1" class="nav-link" data-step="step1">
+                            <span class="nav-step-number">1</span>
+                            Visit Bob Website
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#step2" class="nav-link" data-step="step2">
+                            <span class="nav-step-number">2</span>
+                            Fill Registration Details
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#step3" class="nav-link" data-step="step3">
+                            <span class="nav-step-number">3</span>
+                            Enter OTP
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#step4" class="nav-link" data-step="step4">
+                            <span class="nav-step-number">4</span>
+                            IBMid Created & Access Trial
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#step5" class="nav-link" data-step="step5">
+                            <span class="nav-step-number">5</span>
+                            Download & Install
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#step6" class="nav-link" data-step="step6">
+                            <span class="nav-step-number">6</span>
+                            Login to Bob
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#step7" class="nav-link" data-step="step7">
+                            <span class="nav-step-number">7</span>
+                            Browser Verification
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#step8" class="nav-link" data-step="step8">
+                            <span class="nav-step-number">8</span>
+                            Success
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper" id="main-content">
+                <h1 class="page-title">Getting Started with Bob IDE</h1>
+                <p class="page-description">
+                    Follow these 8 simple steps to set up your IBM Bob IDE trial account and start coding with AI-powered assistance. This guide will walk you through registration, installation, and authentication.
+                </p>
+
+                <!-- Step 1 -->
+                <article id="step1" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 1">1</div>
+                        <h2 class="step-title">Visit Bob Website</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            Navigate to <a href="https://bob.ibm.com/" class="external-link" target="_blank" rel="noopener noreferrer">https://bob.ibm.com/</a> and click on the <strong>"Get free trial"</strong> tile to begin your Bob IDE journey.
+                        </p>
+                        <div class="step-image">
+                            <img src="images/image1.png" alt="Bob welcome page showing the landing page with Bob mascot and Get free trial button" loading="lazy">
+                            <p class="image-caption">Bob welcome page with "Get free trial" option</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Step 2 -->
+                <article id="step2" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 2">2</div>
+                        <h2 class="step-title">Fill Up Registration Details</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            Complete the registration form with your details including email, password, name, and country. Once all fields are filled, click <strong>Next</strong> to proceed.
+                        </p>
+                        <div class="step-image">
+                            <img src="images/image2.png" alt="Trial registration form with fields for email, password, name, and country selection" loading="lazy">
+                            <p class="image-caption">Registration form for Bob trial account</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Step 3 -->
+                <article id="step3" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 3">3</div>
+                        <h2 class="step-title">Enter OTP</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            An OTP (One-Time Password) will be sent to your registered email ID to complete the sign-up process. Enter the 7-digit code and click <strong>Submit</strong> to verify your email address.
+                        </p>
+                        <div class="step-image">
+                            <img src="images/image3.png" alt="Email verification page with 7-digit OTP code input field" loading="lazy">
+                            <p class="image-caption">Email verification step with OTP input</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Step 4 -->
+                <article id="step4" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 4">4</div>
+                        <h2 class="step-title">IBMid Created & Access Trial</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            Congratulations! Your IBMid has been successfully created with the provided email. Now it's time to download the IBM Bob IDE to start coding with AI assistance.
+                        </p>
+                        
+                        <p class="step-description">
+                            Click on <strong>"Access your trial now"</strong> to visit the IBM Bob download page where you can download the IDE for your operating system. Alternatively click <strong><a href="https://bob.ibm.com/download?bob=ide" class="external-link" target="_blank" rel="noopener noreferrer">here</a></strong>.
+                        </p>
+                        <div class="step-image">
+                            <img src="images/image4.png" alt="Trial ready confirmation page showing Bob features and next steps" loading="lazy">
+                            <p class="image-caption">Trial account successfully created</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Step 5 -->
+                <article id="step5" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 5">5</div>
+                        <h2 class="step-title">Download & Install</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            Download and install the Bob IDE for your operating system (macOS, Windows, or Linux). The installation process may take a few minutes, depending on your internet speed. Follow the on-screen instructions to complete the installation.
+                        </p>
+                        <div class="step-image">
+                            <img src="images/image5.png" alt="Bob download page showing download options for different operating systems" loading="lazy">
+                            <p class="image-caption">Select and download Bob IDE for your platform</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Step 6 -->
+                <article id="step6" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 6">6</div>
+                        <h2 class="step-title">Login to Bob</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            Once the installation is complete, open the Bob IDE and click on <strong>"Login to Bob"</strong> to authenticate your account.
+                        </p>
+                        
+                        <div class="important-note" role="alert">
+                            <div class="important-note-title">⚠️ IMPORTANT</div>
+                            <div class="important-note-content">
+                                If you are not already logged in to your IBM account, you will be redirected to the IBMid login page. Please use the <strong>same email ID and password</strong> that you used to register your Bob trial account.
+                            </div>
+                        </div>
+
+                        <div class="image-grid" style="display: flex; flex-direction: column; align-items: center; gap: 2rem;">
+                            <div class="step-image">
+                                <img src="images/image6.png" alt="Bob IDE welcome screen before login showing the Login to Bob button" loading="lazy" style="max-width: 650px; width: 100%;">
+                                <p class="image-caption">Bob IDE welcome screen</p>
+                            </div>
+                            <div class="step-image">
+                                <img src="images/image7.png" alt="IBM login page with email and password fields for authentication" loading="lazy" style="max-width: 450px; width: 100%;">
+                                <p class="image-caption">IBMid login page</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Step 7 -->
+                <article id="step7" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 7">7</div>
+                        <h2 class="step-title">Browser Verification</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            Your default browser will open for W3id trial account verification. Click on <strong>"Open IBM Bob.app"</strong> to complete the authentication process and return to the IDE.
+                        </p>
+                        <div class="step-image">
+                            <img src="images/image8.png" alt="Browser permission dialog asking to open IBM Bob application" loading="lazy">
+                            <p class="image-caption">Browser verification dialog</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Step 8 -->
+                <article id="step8" class="step">
+                    <div class="step-header">
+                        <div class="step-number" aria-label="Step 8">8</div>
+                        <h2 class="step-title">Success</h2>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-description">
+                            Congratulations! Upon successful login, you will be able to see Bob's chat window in the IDE. You're now ready to start coding with Bob.
+                        </p>
+                        <div class="step-image">
+                            <img src="images/image9.png" alt="Authenticated Bob IDE showing the chat interface ready for interaction" loading="lazy">
+                            <p class="image-caption">Bob IDE successfully authenticated with chat interface</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Closing Statement -->
+                <div class="closing-statement">
+                    <p>Next, it's time to see Bob's magic through hands on labs</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="page-footer">
+                <p>&copy; 2026 IBM Corporation. All rights reserved.</p>
+                <p>
+                    <a href="https://bob.ibm.com/" target="_blank" rel="noopener noreferrer">Visit Bob Website</a> | 
+                    <a href="https://www.ibm.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> | 
+                    <a href="https://www.ibm.com/legal" target="_blank" rel="noopener noreferrer">Terms of Use</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- JavaScript for Navigation Highlighting and Mobile Menu -->
+    <script>
+        // Navigation highlighting on scroll
+        const sections = document.querySelectorAll('.step');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function highlightNavigation() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-step') === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', highlightNavigation);
+        window.addEventListener('load', highlightNavigation);
+
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+        }
+
+        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+        sidebarOverlay.addEventListener('click', closeMobileMenu);
+
+        // Close mobile menu when clicking a nav link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Close mobile menu on window resize if screen becomes larger
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html>
